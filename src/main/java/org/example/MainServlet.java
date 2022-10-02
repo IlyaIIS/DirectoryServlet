@@ -5,10 +5,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Console;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -27,6 +24,7 @@ public class MainServlet extends HttpServlet {
         File path = new File(params.get("path")[0]);
         String prePath = path.getParent();
         String serverPath = "http://localhost:8080/server/file?path=";
+        String downloadServerPath = "http://localhost:8080/server/download/file?path=";
 
         String date = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z").format(new Date());
         FileInfo[] folders = getFolders(path);
@@ -34,6 +32,7 @@ public class MainServlet extends HttpServlet {
 
         req.setAttribute("date", date);
         req.setAttribute("serverPath", serverPath);
+        req.setAttribute("downloadServerPath", downloadServerPath);
         req.setAttribute("path", path.toString());
         req.setAttribute("prePath", prePath);
         req.setAttribute("folders", folders);
