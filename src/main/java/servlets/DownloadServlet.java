@@ -1,4 +1,4 @@
-package org.example;
+package servlets;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,7 +15,7 @@ import java.util.Map;
 @WebServlet("/download/file/*")
 public class DownloadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp) throws ServletException, IOException {
+                         HttpServletResponse resp) throws IOException {
         Map<String, String[]> params = req.getParameterMap();
         String filePath = params.get("path")[0];
         File downloadFile = new File(filePath);
