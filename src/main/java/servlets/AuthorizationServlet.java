@@ -5,7 +5,6 @@ import accounts.ServiceManager;
 import accounts.UserProfile;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,16 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 
-@WebServlet("/authorization/*")
 public class AuthorizationServlet extends HttpServlet {
     private AccountService accountService;
 
     @Override
     public void init() {
         accountService = ServiceManager.getAccountService();
-
-        accountService.addNewUser(new UserProfile("admin"));
-        accountService.addNewUser(new UserProfile("test"));
     }
 
     @Override
@@ -69,7 +64,7 @@ public class AuthorizationServlet extends HttpServlet {
             if (profile == null) {
                 accountService.addNewUser(new UserProfile(login, pass, email));
                 profile = accountService.getUserByLogin(login);
-                File userDir = new File("C:/myServerUserFiles/"+login);
+                File userDir = new File("/home/myServerUserFiles/"+login);
                 userDir.mkdir();
             }
             else {
@@ -85,12 +80,14 @@ public class AuthorizationServlet extends HttpServlet {
 
         Cookie cookie = new Cookie("sessionId", request.getSession().getId());
         cookie.setMaxAge(-1);
-        cookie.setPath("/server");
+        cookie.setPath(request.getContextPath());
         response.addCookie(cookie);
 
         accountService.addSession(request.getSession().getId(), profile);
 
-        response.sendRedirect("/server/file?path=C:/myServerUserFiles/"+login);
+        String a = request.getContextPath();
+
+        response.sendRedirect(request.getContextPath() + "/file?path=/home/myServerUserFiles/"+login);
     }
 
     private void logOut(HttpServletRequest request,
@@ -98,7 +95,6 @@ public class AuthorizationServlet extends HttpServlet {
         String sessionId = request.getSession().getId();
         UserProfile profile = accountService.getUserBySessionId(sessionId);
         if (profile == null) {
-            response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             accountService.deleteSession(sessionId);
@@ -114,7 +110,7 @@ public class AuthorizationServlet extends HttpServlet {
                 delCookie.setMaxAge(0);
                 response.addCookie(delCookie);
             }
-            response.sendRedirect("/server/authorization/login");
+            response.sendRedirect(request.getContextPath() + "/authorization/login");
         }
     }
 }

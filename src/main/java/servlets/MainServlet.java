@@ -19,11 +19,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-@WebServlet("/file/*")
 public class MainServlet extends HttpServlet {
     private AccountService accountService;
-    private final String serverPath = "http://localhost:8080/server/file?path=";
-    private final String downloadServerPath = "http://localhost:8080/server/download/file?path=";
+    private final String serverPath = "/file?path=";
+    private final String downloadServerPath = "/download/file?path=";
     @Override
     public void init() {
         accountService = ServiceManager.getAccountService();
@@ -58,7 +57,7 @@ public class MainServlet extends HttpServlet {
         Map<String, String[]> params = req.getParameterMap();
         File path = new File(params.get("path")[0]);
 
-        if (!path.exists() || !path.toString().contains("C:\\myServerUserFiles\\"+userProfile.getLogin())) {
+        if (!path.exists() || !path.toString().contains("/home/myServerUserFiles/"+userProfile.getLogin())) {
             writer.write("Error: wrong directory");
             return;
         }
@@ -71,8 +70,8 @@ public class MainServlet extends HttpServlet {
 
         req.setAttribute("login", userProfile.getLogin());
         req.setAttribute("date", date);
-        req.setAttribute("serverPath", serverPath);
-        req.setAttribute("downloadServerPath", downloadServerPath);
+        req.setAttribute("serverPath", req.getContextPath() + serverPath);
+        req.setAttribute("downloadServerPath", req.getContextPath() + downloadServerPath);
         req.setAttribute("path", path.toString());
         req.setAttribute("prePath", prePath);
         req.setAttribute("folders", folders);
