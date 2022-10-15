@@ -24,20 +24,16 @@ public class AuthorizationServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
         String[] urlParts = request.getRequestURI().split("/");
-        String urlLastPart = urlParts[urlParts.length-1];
+        String urlLastPart = urlParts[urlParts.length - 1];
 
-        if (urlParts.length == 4) {
-            if ((urlLastPart.equals("registration") || urlLastPart.equals("login"))) {
-                response.setStatus(HttpServletResponse.SC_OK);
-                getServletContext().getRequestDispatcher("/" + urlLastPart + ".html").forward(request, response);
-            } else if ((urlLastPart.equals("delete"))) {
-                logOut(request, response);
-            } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-        } else if (urlParts.length == 3) {
+        if ((urlLastPart.equals("registration") || urlLastPart.equals("login"))) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            getServletContext().getRequestDispatcher("/" + urlLastPart + ".html").forward(request, response);
+        } else if (("/" + urlLastPart).equals(request.getServletPath())) {
             response.setStatus(HttpServletResponse.SC_OK);
             getServletContext().getRequestDispatcher("/login.html").forward(request, response);
+        } else if (urlLastPart.equals("delete")) {
+            logOut(request, response);
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -80,12 +76,10 @@ public class AuthorizationServlet extends HttpServlet {
 
         Cookie cookie = new Cookie("sessionId", request.getSession().getId());
         cookie.setMaxAge(-1);
-        cookie.setPath(request.getContextPath());
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         accountService.addSession(request.getSession().getId(), profile);
-
-        String a = request.getContextPath();
 
         response.sendRedirect(request.getContextPath() + "/file?path=/home/myServerUserFiles/"+login);
     }
