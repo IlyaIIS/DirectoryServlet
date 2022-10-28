@@ -1,23 +1,43 @@
 package accounts;
 
+import database.DBInitListener;
+import database.QueryExecutor;
+import servlets.MainServlet;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class AccountService {
-    private final Map<String, UserProfile> loginToProfile;
     private final Map<String, UserProfile> sessionIdToProfile;
 
     public AccountService() {
-        loginToProfile = new HashMap<>();
         sessionIdToProfile = new HashMap<>();
     }
 
     public void addNewUser(UserProfile userProfile) {
-        loginToProfile.put(userProfile.getLogin(), userProfile);
+        try {
+            DBInitListener.queryExecutor.execUpdate(String.format("INSERT users(login, pass, email) VALUES ('%s', '%s', '%s');", userProfile.getLogin(), userProfile.getPass(), userProfile.getEmail()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public UserProfile getUserByLogin(String login) {
-        return loginToProfile.get(login);
+        try {
+            return DBInitListener.queryExecutor.execQuery("SELECT * FROM users WHERE login = '" + login + "';", result -> {
+                if (result.next()) {
+                    return new UserProfile(result.getString(1),
+                            result.getString(2),
+                            result.getString(3));
+                }
+                else {
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public UserProfile getUserBySessionId(String sessionId) {

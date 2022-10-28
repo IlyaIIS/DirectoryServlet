@@ -31,4 +31,10 @@
         <url-pattern>/download/file</url-pattern>
     </servlet-mapping>
 
+    <listener>
+        <listener-class>
+            database.DBInitListener
+        </listener-class>
+    </listener>
+
 </web-app>
