@@ -1,7 +1,8 @@
 package accounts;
 
 import database.DBInitListener;
-import database.QueryExecutor;
+import org.hibernate.*;
+import org.hibernate.criterion.Restrictions;
 import servlets.MainServlet;
 
 import java.util.HashMap;
@@ -16,25 +17,30 @@ public class AccountService {
 
     public void addNewUser(UserProfile userProfile) {
         try {
-            DBInitListener.queryExecutor.execUpdate(String.format("INSERT users2(login, pass, email) VALUES ('%s', '%s', '%s');", userProfile.getLogin(), userProfile.getPass(), userProfile.getEmail()));
-        } catch (Exception e) {
+            Session session = DBInitListener.getNewSession();
+            Transaction transaction = session.beginTransaction();
+            long id = (Long)session.save(userProfile);
+            transaction.commit();
+            session.close();
+        } catch (HibernateException e) {
             e.printStackTrace();
         }
     }
 
     public UserProfile getUserByLogin(String login) {
         try {
-            return DBInitListener.queryExecutor.execQuery("SELECT * FROM users2 WHERE login = '" + login + "';", result -> {
-                if (result.next()) {
-                    return new UserProfile(result.getString(1),
-                            result.getString(2),
-                            result.getString(3));
-                }
-                else {
-                    return null;
-                }
-            });
-        } catch (Exception e) {
+            Session session = DBInitListener.getNewSession();
+            Criteria criteria = session.createCriteria(UserProfile.class);
+            UserProfile profile = ((UserProfile) criteria.add(Restrictions.eq("login", login)).uniqueResult());
+            if (profile != null) {
+                long id = profile.getId();
+                UserProfile dataset = (UserProfile) session.get(UserProfile.class, id);
+                session.close();
+                return dataset;
+            } else {
+                return null;
+            }
+        } catch (HibernateException e) {
             e.printStackTrace();
         }
         return null;

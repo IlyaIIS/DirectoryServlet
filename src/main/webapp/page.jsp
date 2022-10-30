@@ -4,7 +4,7 @@
     <title>ServerDirectory.com</title>
 </head>
 <body>
-    <button onclick="location.href='/server/authorization/delete'" style="float: right;">Log out</button>
+    <button onclick="location.href='/server2/authorization/delete'" style="float: right;">Log out</button>
     <p>Date and time: ${date}</p>
     <b>Path: ${path}</b></p>
     <% if ((!((String)request.getAttribute("path")).equals("/home/myServerUserFiles/"+((String)request.getAttribute("login"))))) {
