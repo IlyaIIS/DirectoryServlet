@@ -18,7 +18,7 @@ public class DBService {
                     append("3306/").                //port
                     append("test_db?").          //db name
                     append("user=root&").          //login
-                    append("password=root");       //password
+                    append("password=****");       //password
 
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;

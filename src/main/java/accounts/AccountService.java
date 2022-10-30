@@ -16,7 +16,7 @@ public class AccountService {
 
     public void addNewUser(UserProfile userProfile) {
         try {
-            DBInitListener.queryExecutor.execUpdate(String.format("INSERT users(login, pass, email) VALUES ('%s', '%s', '%s');", userProfile.getLogin(), userProfile.getPass(), userProfile.getEmail()));
+            DBInitListener.queryExecutor.execUpdate(String.format("INSERT users2(login, pass, email) VALUES ('%s', '%s', '%s');", userProfile.getLogin(), userProfile.getPass(), userProfile.getEmail()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -24,7 +24,7 @@ public class AccountService {
 
     public UserProfile getUserByLogin(String login) {
         try {
-            return DBInitListener.queryExecutor.execQuery("SELECT * FROM users WHERE login = '" + login + "';", result -> {
+            return DBInitListener.queryExecutor.execQuery("SELECT * FROM users2 WHERE login = '" + login + "';", result -> {
                 if (result.next()) {
                     return new UserProfile(result.getString(1),
                             result.getString(2),
